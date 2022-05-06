@@ -52,6 +52,7 @@ main {
     border-radius: 0.5rem;
 }
 .input_values {
+    overflow: hidden;
     width: 100%;
     margin: 0 auto;
     height: 3rem;
@@ -103,8 +104,12 @@ main {
     box-sizing: content-box;
     font-size: 1rem;
 }
-button:hover {
+.button:hover {
     background-color: rgba(255,255,255,0.12);
+}
+.button.active {
+    color: #2B589A;
+    background-color: white;
 }
 
 @media (max-width: 500px) {
