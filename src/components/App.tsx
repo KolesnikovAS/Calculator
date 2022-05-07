@@ -1,65 +1,70 @@
-import React from "react";
-import { useState } from 'react';
+import React, {useState, useEffect} from "react";
 
 import './styles.css';
 
 const App = () => {
-    const buttons = ["C", "\u221A", "%", "/", "7", "8", "9", "*", "4", "5", "6", "-", "1", "2", "3", "+", "00", "0", ".", "="]
-    const [result, changeResult] = useState<string>("0");
-    const [string, changeString] = useState<string>("");
-    const [activeButton, changeActiveButton] = useState<string>("")
-    const onButton = (key : string) => {
-        changeActiveButton(key)
-        setTimeout(() => changeActiveButton(""), 100)
-        calc(key);
+    const buttons = ["C", "√", "%", "/", "7", "8", "9", "*", "4", "5", "6", "-", "1", "2", "3", "+", "00", "0", ".", "="]
+    const [result, setResult] = useState<string>("0");
+    const [expression, setExpression] = useState<string>("");
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeydown);
+        return () => window.removeEventListener('keydown', handleKeydown);
+    },[expression])
+
+    const handleClick = (key : string) => {
+        calculate(key);
     }
-    const handler = (event: KeyboardEvent) => {
+
+    const handleKeydown = (event: KeyboardEvent) => {
         if ((event.key).match(/[0-9%\/*\-+\(\)=]|Backspace|Enter/)) {
             event.preventDefault();
-            calc(event.key);
-            document.removeEventListener('keydown', handler);
+            calculate(event.key);
         }
     }
-    const checkResultLength = (string : string) => {
-        return (string.length > 12) ? string.slice(0, 12) : string ;
-    }
-    document.addEventListener('keydown', handler);
-    const calc = (key : string) => { 
+
+    const calculate = (key : string) => { 
         switch (key) {
-            case (key === "=" || key === "Enter") ? key : false:
-                if (string.length === 0) break;
+            case "=":
+            case "Enter":
+                if (expression.length === 0) break;
                 try {
-                    changeResult(checkResultLength(eval(string).toString()));
+                    setResult((eval(expression).toString()));
                 } catch {
-                    changeResult("Error");
+                    setResult("Error");
                 }
-                changeString("");
+                setExpression("");
                 break;
-            case (key === "C" || key === "Backspace") ? key : false:
-                if (string.length > 0) changeString(string.slice(0, -1));
-                else changeResult("0");
+            case "%":
+                // let value = 
+                // let regexp = /[%\/*\-+\(\)=]/g;
+                // console.log( regexp.exec(expression));
                 break;
-            case "\u221A":
-                (string.length === 0) ?
-                    changeResult(checkResultLength(Math.sqrt(eval(result)).toString())) :
-                    changeResult(checkResultLength(Math.sqrt(eval(string)).toString()));
-                changeString("");
+            case "C":
+            case "Backspace":
+                if (expression.length > 0) setExpression(expression.slice(0, -1));
+                else setResult("0");
+                break;
+            case "√":
+                (expression.length === 0) ?
+                    setResult(Math.sqrt(eval(result)).toString()) :
+                    setResult(Math.sqrt(eval(expression)).toString());
+                setExpression("");
                 break;
             default:
-                (string.length === 0 && result !== "Error" && result !== "0" && result !== "NaN" && key.match(/[%\/*\-+\(\)=]/)) ?
-                    changeString(result + string + key) :
-                    changeString(string + key);
+                (expression.length === 0 && result !== "Error" && result !== "0" && result !== "NaN" && key.match(/[%\/*\-+\(\)=]/)) ?
+                    setExpression(result + expression + key) :
+                    setExpression(expression + key);
         }
     }
     return (
         <main>
             <section className="calc_body">
-                <p className="input_values">{string}</p>
+                <p className="expression">{expression}</p>
                 <p className="result">{result}</p>
                 <div className="buttons_field">
                     {buttons.map((item) =>
-                        <button onClick={() => onButton(item)} key={item} 
-                            className={`button ${activeButton === item && "active"}`}>{item}</button>)}
+                        <button onClick={() => handleClick(item)} key={item}>{item}</button>)}
                 </div>
             </section>
         </main>
