@@ -46,7 +46,7 @@ const App = () => {
                 changeString("");
                 break;
             default:
-                (string.length === 0 && result !== "0" && result !== "NaN" && key.match(/[%\/*\-+\(\)=]/)) ?
+                (string.length === 0 && result !== "Error" && result !== "0" && result !== "NaN" && key.match(/[%\/*\-+\(\)=]/)) ?
                     changeString(result + string + key) :
                     changeString(string + key);
         }
