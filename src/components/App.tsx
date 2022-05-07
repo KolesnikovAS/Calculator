@@ -1,62 +1,70 @@
-import React, {useState, useEffect} from "react";
-
+import React, { useState, useEffect } from 'react';
 import './styles.css';
 
 const App = () => {
-    const buttons = ["C", "√", "%", "/", "7", "8", "9", "*", "4", "5", "6", "-", "1", "2", "3", "+", "00", "0", ".", "="]
-    const [result, setResult] = useState<string>("0");
-    const [expression, setExpression] = useState<string>("");
+    const buttons = ['C', '√', '%', '/', '7', '8', '9', '*', '4', '5', '6', '-', '1', '2', '3', '+', '00', '0', '.', '='];
+    const [result, setResult] = useState<string>('0');
+    const [expression, setExpression] = useState<string>('');
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeydown);
         return () => window.removeEventListener('keydown', handleKeydown);
-    },[expression])
+    },[expression]);
 
-    const handleClick = (key : string) => {
+    const handleClick = (key: string) => {
         calculate(key);
-    }
+    };
 
     const handleKeydown = (event: KeyboardEvent) => {
         if ((event.key).match(/[0-9%\/*\-+\(\)=]|Backspace|Enter/)) {
             event.preventDefault();
             calculate(event.key);
         }
-    }
+    };
 
-    const calculate = (key : string) => { 
+    const calculate = (key: string) => {
         switch (key) {
-            case "=":
-            case "Enter":
+            case '=':
+            case 'Enter':
                 if (expression.length === 0) break;
                 try {
                     setResult((eval(expression).toString()));
                 } catch {
-                    setResult("Error");
+                    setResult('Error');
                 }
-                setExpression("");
+                setExpression('');
                 break;
-            case "%":
-                // let value = 
-                // let regexp = /[%\/*\-+\(\)=]/g;
-                // console.log( regexp.exec(expression));
+            case '%':
+                if (!expression.match(/[%\/*\-+\(\)=]/g)) {
+                    setResult('0');
+                    setExpression('');
+                    break;
+                }
+                // return array of operators in expression
+                const operators = (Array.from(expression.matchAll(/[%\/*\-+\(\)=]/g)));
+                // return index of last operator
+                const lastOperatorIndex = operators[operators.length - 1].index;
+                // return calculated last digit in %
+                const lastDigit = (eval(expression.slice(0, lastOperatorIndex)))*(Number(expression.slice(lastOperatorIndex + 1))/100);
+                setExpression(expression.slice(0, lastOperatorIndex + 1) + lastDigit);
                 break;
-            case "C":
-            case "Backspace":
+            case 'C':
+            case 'Backspace':
                 if (expression.length > 0) setExpression(expression.slice(0, -1));
-                else setResult("0");
+                else setResult('0');
                 break;
-            case "√":
+            case '√':
                 (expression.length === 0) ?
                     setResult(Math.sqrt(eval(result)).toString()) :
                     setResult(Math.sqrt(eval(expression)).toString());
-                setExpression("");
+                setExpression('');
                 break;
             default:
-                (expression.length === 0 && result !== "Error" && result !== "0" && result !== "NaN" && key.match(/[%\/*\-+\(\)=]/)) ?
+                (expression.length === 0 && result !== 'Error' && result !== '0' && result !== 'NaN' && key.match(/[%\/*\-+\(\)=]/)) ?
                     setExpression(result + expression + key) :
                     setExpression(expression + key);
         }
-    }
+    };
     return (
         <main>
             <section className="calc_body">
@@ -69,7 +77,6 @@ const App = () => {
             </section>
         </main>
     );
-}
-
+};
 
 export default App;
