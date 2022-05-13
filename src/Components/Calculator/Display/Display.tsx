@@ -4,7 +4,7 @@ import Result from './Result/Result';
 import './Display.scss';
 
 
-const Display = () => {
+const Display : React.FC = () => {
     return (
         <div className="display">
             <Expression />

@@ -38,6 +38,7 @@
                 160
             ]
         },
+        "indent": [true, "spaces", 4],
         "new-parens": true,
         "no-arg": true,
         "no-bitwise": true,

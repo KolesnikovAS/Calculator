@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import { Context } from '../../CalculatorContainer';
+import { Context, ContextType } from '../../CalculatorContainer';
 import './Button.scss';
 
 type props = {
     value: string,
 };
 
-const Button = ({value}:props) => {
-    const { handleClick } = useContext(Context);
+const Button : React.FC<props> = ({value}) => {
+    const { handleClick } = useContext(Context) as ContextType;
     return (
         <button onClick={() => handleClick(value)} className="button">{value}</button>
     );

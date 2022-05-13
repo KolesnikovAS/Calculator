@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Context } from '../../CalculatorContainer';
+import { Context, ContextType } from '../../CalculatorContainer';
 import './Expression.scss';
 
-const Expression = () => {
-    const { expression } = useContext(Context);
+const Expression :  React.FC = () => {
+    const { expression } = useContext(Context) as ContextType;
     return (
         <p className="expression">{expression}</p>
     );

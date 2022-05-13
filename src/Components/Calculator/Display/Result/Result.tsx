@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Context } from '../../CalculatorContainer';
+import { Context, ContextType } from '../../CalculatorContainer';
 import './Result.scss';
 
-const Result = () => {
-    const { result } = useContext(Context);
+const Result : React.FC = () => {
+    const { result } = useContext(Context) as ContextType;
     return (
         <p className="result">{result}</p>
     );
