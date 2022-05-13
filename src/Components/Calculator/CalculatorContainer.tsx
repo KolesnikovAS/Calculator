@@ -11,7 +11,7 @@ export const Context = React.createContext<Partial<ContextType | null>>(null);
 
 const CalculatorContainer : React.FC = () => {
     const [result, setResult] = useState<string>('0');
-    const [expression, setExpression] = useState<string>('');
+    const [expression, setExpression] = useState<string>('8*(6-4)-7*(1');
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeydown);
@@ -30,65 +30,64 @@ const CalculatorContainer : React.FC = () => {
     };
 
     const calculate : (expression : string) => string = (expression) => {
-        let value: string = expression;
+        let combination : string = expression;
 
         // for operation in scopes
         const calculateScopes : () => void = () => {
-            // while expression include scopes
-            while (value.match(/[()]/)) {
-                const secondScopeIndex = value.indexOf(')');
-                const firstScopeIndex = value.slice(0, secondScopeIndex).lastIndexOf('(');
-                // get result of expression in scopes
-                const result = calculate(value.slice(firstScopeIndex + 1, secondScopeIndex));
-                // replace expression in scopes with result
-                value = value.replace(value.slice(firstScopeIndex, secondScopeIndex + 1), result);
-                console.log(value);
+            // while combination include scopes
+            while (combination.match(/[()]/)) {
+                const secondScopeIndex = combination.indexOf(')');
+                const firstScopeIndex = combination.slice(0, secondScopeIndex).lastIndexOf('(');
+                // get result of combination in scopes
+                const result = calculate(combination.slice(firstScopeIndex + 1, secondScopeIndex));
+                // replace combination in scopes with result
+                combination = combination.replace(combination.slice(firstScopeIndex, secondScopeIndex + 1), result);
             }
         };
         // for high priority operation ( * or / )
         const calculateHighPriorityOperations : (operation : '*' | '/') => void = (operation) => {
-            // while expression include operation * or /
-            while (value.indexOf(operation) !== -1) {
-                // split expression on digits
-                const operands: string[] = value.split(/[\/*\-+]/);
+            // while combination include operation * or /
+            while (combination.indexOf(operation) !== -1) {
+                // split combination on digits
+                const operands: string[] = combination.split(/[\/*\-+]/);
                 // get index of first operator * or /
-                const operatorIndex: number = value.match(/[\/*\-+]/g)!.indexOf(operation);
+                const operatorIndex: number = combination.match(/[\/*\-+]/g)!.indexOf(operation);
                 // get result of operation with two close digits
                 let result: number | null = null;
                 if (operation === '*') result = +operands[operatorIndex] * +operands[operatorIndex + 1];
                 else if (operation === '/') result = +operands[operatorIndex] / +operands[operatorIndex + 1];
                 // replace operation with two close digits with result
-                value = value.replace(operands[operatorIndex] + operation + operands[operatorIndex + 1], result!.toString());
+                combination = combination.replace(operands[operatorIndex] + operation + operands[operatorIndex + 1], result!.toString());
             }
         };
 
         // for low priority operation ( + or - )
         const calculateLowPriorityOperations : () => void = () => {
-            // while expression include operation - or + and expression is not digit
-            while (value.match(/[+-]/) && !(+value)) {
+            // while combination include operation - or + and combination is not digit
+            while (combination.match(/[+-]/) && !(+combination)) {
                 // first operands is negative ?
-                if (value[0] === '-') {
-                    // split expression on digits
-                    const operands: string[] = value.slice(1).split(/[+-]/);
+                if (combination[0] === '-') {
+                    // split combination on digits
+                    const operands: string[] = combination.slice(1).split(/[+-]/);
                     // get first operator
-                    const operator: string = value.slice(1).match(/[+-]/g)![0];
+                    const operator: string = combination.slice(1).match(/[+-]/g)![0];
                     // get result of operation with two first digits
                     let result: number | null = null;
                     if (operator === '+') result = 0 - +operands[0] + +operands[1];
                     else if (operator === '-') result = 0 - +operands[0] - +operands[1];
                     // replace operation with two first digits with result
-                    value = value.replace(value[0] + operands[0] + operator + operands[1], result!.toString());
+                    combination = combination.replace(combination[0] + operands[0] + operator + operands[1], result!.toString());
                 } else {
-                    // split expression on digits
-                    const operands: string[] = value.split(/[+-]/);
+                    // split combination on digits
+                    const operands: string[] = combination.split(/[+-]/);
                     // get first operator
-                    const operator: string = value.match(/[+-]/g)![0];
+                    const operator: string = combination.match(/[+-]/g)![0];
                     // get result of operation with two first digits
                     let result: number | null = null;
                     if (operator === '+') result = +operands[0] + +operands[1];
                     else if (operator === '-') result = +operands[0] - +operands[1];
                     // replace operation with two first digits with result
-                    value = value.replace(operands[0] + operator + operands[1], result!.toString());
+                    combination = combination.replace(operands[0] + operator + operands[1], result!.toString());
                 }
             }
         };
@@ -96,7 +95,7 @@ const CalculatorContainer : React.FC = () => {
         calculateHighPriorityOperations('*');
         calculateHighPriorityOperations('/');
         calculateLowPriorityOperations();
-        return value;
+        return combination;
     };
 
     const inputKey = (key: string) => {
@@ -105,6 +104,10 @@ const CalculatorContainer : React.FC = () => {
             case 'Enter':
                 if (expression.length === 0) break;
                 try {
+                    // if count of "(" !== ")" throw Error
+                    if (expression.match(/[()]/) && (expression.match(/[(]/g)!.length !== expression.match(/[)]/g)!.length)) {
+                        throw Error;
+                    }
                     setResult(calculate(expression));
                 } catch {
                     setResult('Error');
