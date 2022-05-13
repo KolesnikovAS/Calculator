@@ -1,0 +1,10 @@
+.buttons_area {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 0.5rem;
+    justify-items: center;
+}
+

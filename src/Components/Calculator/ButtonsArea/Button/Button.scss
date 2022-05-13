@@ -1,0 +1,19 @@
+.button {
+    border: none;
+    border-radius: 50%;
+    width: 2.1rem;
+    height: 2.1rem;
+    background-color: transparent;
+    box-sizing: content-box;
+    font-size: 1rem;
+}
+.button:hover {
+    background-color: rgba(255,255,255,0.12);
+}
+.button:active {
+    color: #2B589A;
+    background-color: white;
+}
+.button:focus {
+    outline: none;
+}

@@ -1,0 +1,45 @@
+@font-face {
+    font-family: Geometria-Bold;
+    font-style: bold;
+    font-weight: 700;
+    src: local(Geometria-Bold), url(Assets/fonts/Geometria-Bold.ttf);
+}
+@font-face {
+    font-family: Geometria-Medium;
+    font-style: bold;
+    font-weight: 500;
+    src: local(Geometria-Medium), url(Assets/fonts/Geometria-Medium.ttf);
+}
+* {
+    font-family: Geometria-Medium;
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+html {
+    font-size: 4vh;
+}
+body {
+    background: linear-gradient(#FFA1A1, #FF7B7B);
+}
+main {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+
+@media (max-width: 500px) {
+    html{
+        font-size: 30px;
+    }
+}
+@media (max-width: 360px) {
+    html{
+        font-size: 28px;
+    }
+}
+@media (max-width: 350px) {
+    html{
+        font-size: 20px;
+    }
+}

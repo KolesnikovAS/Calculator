@@ -1,0 +1,14 @@
+.expression {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.65rem;
+    line-height: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-content: flex-end;
+}
