@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { calculate, calculatePercent, calculateSqrt } from '../../Calculations/Calculations';
 import Calculator from './Calculator';
 
 export type ContextType = {
@@ -7,102 +8,29 @@ export type ContextType = {
     handleClick: (key: string) => void,
 };
 
-export const Context = React.createContext<Partial<ContextType | null>>(null);
+export const Context = React.createContext<ContextType | null>(null);
 
 const CalculatorContainer: React.FC = () => {
     const [result, setResult] = useState<string>('0');
-    const [expression, setExpression] = useState<string>('9-(9*-25)');
+    const [expression, setExpression] = useState<string>('');
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeydown);
         return () => window.removeEventListener('keydown', handleKeydown);
     }, [expression, result]);
 
-    const handleClick: (key: string) => void = (key) => {
+    const handleClick = (key: string) : void => {
         inputKey(key);
     };
 
-    const handleKeydown: (event: KeyboardEvent) => void = (event) => {
+    const handleKeydown = (event: KeyboardEvent) : void => {
         if ((event.key).match(/[0-9%\/*\-+\(\)=]|Backspace|Enter/)) {
             event.preventDefault();
             inputKey(event.key);
         }
     };
 
-    const calculate: (expression: string) => string = (expression) => {
-        let combination: string = expression;
-
-        // if combination include scopes
-        if (combination.match(/[()]/)) {
-            const secondScopeIndex = combination.indexOf(')');
-            const firstScopeIndex = combination.slice(0, secondScopeIndex).lastIndexOf('(');
-            // get result of combination in scopes
-            const result = calculate(combination.slice(firstScopeIndex + 1, secondScopeIndex));
-            // replace combination in scopes with result
-            combination = combination.replace(combination.slice(firstScopeIndex, secondScopeIndex + 1), result);
-        }
-
-        // for high priority operation ( * or / )
-        const calculateHighPriorityOperations: (operation: '*' | '/') => void = (operation) => {
-            combination = combination.replace('--', '+');
-            // while combination include operation * or /
-            while (combination.indexOf(operation) !== -1) {
-                // split combination on digits
-                const operands: string[] = combination.split(/[\/*\-+]/);
-                // get index of first operator * or /
-                const operatorIndex: number = combination.match(/[\/*\-+]/g)!.indexOf(operation);
-                // get result of operation with two close digits
-                let result: string | null = null;
-                if (!operands[operatorIndex + 1]) {
-                    if (operation === '*') result = '-' + (+operands[operatorIndex] * +operands[operatorIndex + 2]);
-                    else if (operation === '/') result = '-' + (+operands[operatorIndex] / +operands[operatorIndex + 2]);
-                    combination = combination.replace(operands[operatorIndex] + operation + '-' + operands[operatorIndex + 2], result!);
-                } else {
-                    if (operation === '*') result = (+operands[operatorIndex] * +operands[operatorIndex + 1]).toString();
-                    else if (operation === '/') result = (+operands[operatorIndex] / +operands[operatorIndex + 1]).toString();
-                    combination = combination.replace(operands[operatorIndex] + operation + operands[operatorIndex + 1], result!);
-                }
-                // replace operation with two close digits with result
-            }
-        };
-
-        // for low priority operation ( + or - )
-        const calculateLowPriorityOperations: () => void = () => {
-            // while combination include operation - or + and combination is not digit
-            while (combination.match(/[+-]/) && !(+combination)) {
-                // first operands is negative ?
-                if (combination[0] === '-') {
-                    // split combination on digits
-                    const operands: string[] = combination.slice(1).split(/[+-]/);
-                    // get first operator
-                    const operator: string = combination.slice(1).match(/[+-]/g)![0];
-                    // get result of operation with two first digits
-                    let result: number | null = null;
-                    if (operator === '+') result = 0 - +operands[0] + +operands[1];
-                    else if (operator === '-') result = 0 - +operands[0] - +operands[1];
-                    // replace operation with two first digits with result
-                    combination = combination.replace(combination[0] + operands[0] + operator + operands[1], result!.toString());
-                } else {
-                    // split combination on digits
-                    const operands: string[] = combination.split(/[+-]/);
-                    // get first operator
-                    const operator: string = combination.match(/[+-]/g)![0];
-                    // get result of operation with two first digits
-                    let result: number | null = null;
-                    if (operator === '+') result = +operands[0] + +operands[1];
-                    else if (operator === '-') result = +operands[0] - +operands[1];
-                    // replace operation with two first digits with result
-                    combination = combination.replace(operands[0] + operator + operands[1], result!.toString());
-                }
-            }
-        };
-        calculateHighPriorityOperations('*');
-        calculateHighPriorityOperations('/');
-        calculateLowPriorityOperations();
-        return combination;
-    };
-
-    const inputKey: (key: string) => void = (key) => {
+    const inputKey = (key: string) : void => {
         switch (key) {
             case '=':
             case 'Enter':
@@ -124,13 +52,7 @@ const CalculatorContainer: React.FC = () => {
                     setExpression('');
                     break;
                 }
-                // get array of operators in expression
-                const operators: RegExpMatchArray[] = (Array.from(expression.matchAll(/[%\/*\-+\(\)=]/g)));
-                // get index of last operator
-                const lastOperatorIndex: number = operators[operators.length - 1].index!;
-                // get calculated last digit in %
-                const lastDigit: number = Number(calculate(expression.slice(0, lastOperatorIndex))) * (Number(expression.slice(lastOperatorIndex + 1)) / 100);
-                setExpression(expression.slice(0, lastOperatorIndex + 1) + lastDigit);
+                setExpression(calculatePercent(expression));
                 break;
             case 'C':
             case 'Backspace':
@@ -138,8 +60,8 @@ const CalculatorContainer: React.FC = () => {
                 break;
             case '√':
                 (expression.length === 0) ?
-                    setResult(Math.sqrt(Number(calculate(result))).toString()) :
-                    setResult(Math.sqrt(Number(calculate(expression))).toString());
+                    setResult(calculateSqrt(result)) :
+                    setResult(calculateSqrt(expression));
                 setExpression('');
                 break;
             default:

@@ -15,3 +15,21 @@ Use the command to launch the application:
 __npm start__
 
 After that, the application will open in Browser at http://localhost:8080
+
+For testing use the command:
+
+__npm test__
+
+icludes tests:
+
+  √ multiply positive digits (3 ms)
+  √ multiply negative digits
+  √ devide positive digits (1 ms)
+  √ devide negative digits
+  √ return calculated string after multiplication (1 ms)
+  √ return calculated string after devision
+  √ return calculated string after subtraction and summation (3 ms)
+  √ return calculated string after operations in scopes (1 ms)
+  √ return string with last digit calculated in % (1 ms)
+  √ return Sqrt of calculated expression (1 ms)
+  √ return calculated expression (1 ms)
